@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  deven-git:
+    container_name: deven-git
+    build: 
+      context: .
+      dockerfile: deven-vol-Dockerfile
+    volumes:
+      - deven-vol:/code
+volumes:
+  deven-vol:
+    external: true
+

@@ -1,0 +1,41 @@
+FROM amazonlinux:latest
+LABEL LABEL org.opencontainers.image.source https://github.com/renochj/deven
+
+ARG USERNAME
+ARG USER_UID
+ARG USER_GID
+
+RUN yum update -y
+RUN amazon-linux-extras install docker
+RUN yum install -y git unzip tar shadow-utils sudo zsh wget python3 docker
+RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
+RUN yum -y install nodejs
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip && ./aws/install
+RUN pip3 install gimme-aws-creds
+RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
+RUN ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+RUN groupadd --gid ${USER_GID} ${USERNAME} \
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} \
+    && echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME}
+
+RUN mkdir -p /home/$USERNAME/.vscode-server/extensions /home/${USERNAME}/.vscode-server-insiders/extensions
+RUN chown -R $USERNAME /home/$USERNAME/.vscode-server /home/${USERNAME}/.vscode-server-insiders
+        
+USER $USERNAME
+
+# RUN sudo service docker start
+RUN sudo usermod -a -G docker ${USERNAME}
+
+# WORKDIR /home/$USERNAME
+COPY --chown=vscode:vscode .config /home/${USERNAME}
+
+ENV SHELL /bin/zsh
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+# RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+# RUN echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
+
+CMD [ "sleep", "infinity" ]
