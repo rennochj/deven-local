@@ -15,7 +15,9 @@ RUN apk add git
  
 RUN apk add --update docker docker-compose
 
-ENV DEVEN_PATH "/deven-scripts"
+ENV DEVEN_PATH "/deven"
+COPY scripts "${DEVEN_PATH}/"
+COPY containers "${DEVEN_PATH}/"
 COPY scripts "${DEVEN_PATH}/"
 ENV PATH="${DEVEN_PATH}:${PATH}"
 
