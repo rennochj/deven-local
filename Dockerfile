@@ -15,9 +15,9 @@ RUN apk add git
  
 RUN apk add --update docker docker-compose
 
-COPY scripts /scripts
-
-ENV PATH="/scripts:${PATH}"
+ENV DEVEN_PATH "/deven-scripts"
+COPY scripts "${DEVEN_PATH}/"
+ENV PATH="${DEVEN_PATH}:${PATH}"
 
 # ENTRYPOINT [ "/bin/ash" ]
  

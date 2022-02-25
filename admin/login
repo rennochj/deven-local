@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo $CR_PAT | docker login ghcr.io -u rennochj --password-stdin
